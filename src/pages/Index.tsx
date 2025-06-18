@@ -6,6 +6,8 @@ import ItemTaxTable from '../components/ItemTaxTable';
 import { Item, Tax, ItemTax } from '../types/tables';
 
 const Index = () => {
+  console.log('🏠 Index component rendering');
+
   const [items, setItems] = useState<Item[]>([
     { id: 1, product: 'Pen', quantity: 2, rate: 10, amount: 20 },
     { id: 2, product: 'Book', quantity: 1, rate: 100, amount: 100 }
@@ -22,12 +24,14 @@ const Index = () => {
   ]);
 
   const updateItem = useCallback((id: number, updates: Partial<Item>) => {
+    console.log(`⚡ updateItem called for item ${id}:`, updates);
     setItems(prev => prev.map(item => {
       if (item.id === id) {
         const updatedItem = { ...item, ...updates };
         // Auto-calculate amount when quantity or rate changes
         if ('quantity' in updates || 'rate' in updates) {
           updatedItem.amount = updatedItem.quantity * updatedItem.rate;
+          console.log(`🧮 Amount recalculated for item ${id}: ${updatedItem.amount}`);
         }
         return updatedItem;
       }
@@ -36,12 +40,14 @@ const Index = () => {
   }, []);
 
   const updateTax = useCallback((id: number, updates: Partial<Tax>) => {
+    console.log(`⚡ updateTax called for tax ${id}:`, updates);
     setTaxes(prev => prev.map(tax => 
       tax.id === id ? { ...tax, ...updates } : tax
     ));
   }, []);
 
   const updateItemTax = useCallback((id: number, itemId: number, taxId: number) => {
+    console.log(`⚡ updateItemTax called for itemTax ${id}: itemId=${itemId}, taxId=${taxId}`);
     const item = items.find(i => i.id === itemId);
     const tax = taxes.find(t => t.id === taxId);
     
@@ -49,8 +55,10 @@ const Index = () => {
       let total = 0;
       if (tax.type === 'Percentage') {
         total = (item.amount * tax.charge) / 100;
+        console.log(`🧮 Percentage calculation: ${item.amount} * ${tax.charge}% = ${total}`);
       } else {
         total = tax.charge;
+        console.log(`🧮 Fixed amount: ${total}`);
       }
       
       setItemTaxes(prev => prev.map(itemTax =>
@@ -63,6 +71,7 @@ const Index = () => {
 
   const addItem = useCallback(() => {
     const newId = Math.max(...items.map(i => i.id), 0) + 1;
+    console.log(`➕ Adding new item with ID: ${newId}`);
     setItems(prev => [...prev, { 
       id: newId, 
       product: '', 
@@ -74,6 +83,7 @@ const Index = () => {
 
   const addTax = useCallback(() => {
     const newId = Math.max(...taxes.map(t => t.id), 0) + 1;
+    console.log(`➕ Adding new tax with ID: ${newId}`);
     setTaxes(prev => [...prev, { 
       id: newId, 
       tax: '', 
@@ -85,6 +95,7 @@ const Index = () => {
 
   const addItemTax = useCallback(() => {
     const newId = Math.max(...itemTaxes.map(it => it.id), 0) + 1;
+    console.log(`➕ Adding new item tax with ID: ${newId}`);
     setItemTaxes(prev => [...prev, { 
       id: newId, 
       itemId: items[0]?.id || 1, 
@@ -95,6 +106,7 @@ const Index = () => {
 
   // Recalculate item taxes when items or taxes change
   const recalculatedItemTaxes = useMemo(() => {
+    console.log('🔄 Recalculating all item taxes due to items or taxes change');
     return itemTaxes.map(itemTax => {
       const item = items.find(i => i.id === itemTax.itemId);
       const tax = taxes.find(t => t.id === itemTax.taxId);
@@ -106,7 +118,11 @@ const Index = () => {
         } else {
           total = tax.charge;
         }
-        return { ...itemTax, total: parseFloat(total.toFixed(2)) };
+        const newTotal = parseFloat(total.toFixed(2));
+        if (newTotal !== itemTax.total) {
+          console.log(`🔄 ItemTax ${itemTax.id} total updated: ${itemTax.total} → ${newTotal}`);
+        }
+        return { ...itemTax, total: newTotal };
       }
       return itemTax;
     });

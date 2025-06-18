@@ -10,20 +10,26 @@ interface TaxDetailsTableProps {
 }
 
 const TaxRow = memo(({ tax, onUpdate }: { tax: Tax; onUpdate: (id: number, updates: Partial<Tax>) => void }) => {
+  console.log(`🏷️ TaxRow ${tax.id} rendering - Tax: ${tax.tax}, Charge: ${tax.charge}`);
+
   const handleTaxChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(`📝 Tax name change for tax ${tax.id}: ${e.target.value}`);
     onUpdate(tax.id, { tax: e.target.value });
   }, [tax.id, onUpdate]);
 
   const handleTypeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log(`🔄 Tax type change for tax ${tax.id}: ${e.target.value}`);
     onUpdate(tax.id, { type: e.target.value as 'Percentage' | 'Amount' });
   }, [tax.id, onUpdate]);
 
   const handleTaxOnChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log(`🎯 Tax on change for tax ${tax.id}: ${e.target.value}`);
     onUpdate(tax.id, { taxOn: e.target.value as 'On Item' | 'On Order' });
   }, [tax.id, onUpdate]);
 
   const handleChargeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const charge = parseFloat(e.target.value) || 0;
+    console.log(`💰 Charge change for tax ${tax.id}: ${charge}`);
     onUpdate(tax.id, { charge });
   }, [tax.id, onUpdate]);
 
@@ -75,6 +81,8 @@ const TaxRow = memo(({ tax, onUpdate }: { tax: Tax; onUpdate: (id: number, updat
 TaxRow.displayName = 'TaxRow';
 
 const TaxDetailsTable = memo(({ taxes, onUpdateTax, onAddTax }: TaxDetailsTableProps) => {
+  console.log('🏷️ TaxDetailsTable rendering with', taxes.length, 'taxes');
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">

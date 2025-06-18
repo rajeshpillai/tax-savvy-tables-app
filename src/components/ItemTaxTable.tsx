@@ -22,13 +22,17 @@ const ItemTaxRow = memo(({
   taxes: Tax[]; 
   onUpdate: (id: number, itemId: number, taxId: number) => void;
 }) => {
+  console.log(`🔗 ItemTaxRow ${itemTax.id} rendering - ItemID: ${itemTax.itemId}, TaxID: ${itemTax.taxId}, Total: ${itemTax.total}`);
+
   const handleItemChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     const itemId = parseInt(e.target.value);
+    console.log(`📦 Item selection change for itemTax ${itemTax.id}: ${itemId}`);
     onUpdate(itemTax.id, itemId, itemTax.taxId);
   }, [itemTax.id, itemTax.taxId, onUpdate]);
 
   const handleTaxChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     const taxId = parseInt(e.target.value);
+    console.log(`🏷️ Tax selection change for itemTax ${itemTax.id}: ${taxId}`);
     onUpdate(itemTax.id, itemTax.itemId, taxId);
   }, [itemTax.id, itemTax.itemId, onUpdate]);
 
@@ -81,6 +85,8 @@ const ItemTaxTable = memo(({
   onUpdateItemTax, 
   onAddItemTax 
 }: ItemTaxTableProps) => {
+  console.log('🔗 ItemTaxTable rendering with', itemTaxes.length, 'item taxes');
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">

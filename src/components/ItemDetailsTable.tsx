@@ -10,17 +10,22 @@ interface ItemDetailsTableProps {
 }
 
 const ItemRow = memo(({ item, onUpdate }: { item: Item; onUpdate: (id: number, updates: Partial<Item>) => void }) => {
+  console.log(`🔄 ItemRow ${item.id} rendering - Product: ${item.product}, Amount: ${item.amount}`);
+
   const handleProductChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(`📝 Product change for item ${item.id}: ${e.target.value}`);
     onUpdate(item.id, { product: e.target.value });
   }, [item.id, onUpdate]);
 
   const handleQuantityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const quantity = parseInt(e.target.value) || 0;
+    console.log(`📊 Quantity change for item ${item.id}: ${quantity}`);
     onUpdate(item.id, { quantity });
   }, [item.id, onUpdate]);
 
   const handleRateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const rate = parseFloat(e.target.value) || 0;
+    console.log(`💰 Rate change for item ${item.id}: ${rate}`);
     onUpdate(item.id, { rate });
   }, [item.id, onUpdate]);
 
@@ -66,6 +71,8 @@ const ItemRow = memo(({ item, onUpdate }: { item: Item; onUpdate: (id: number, u
 ItemRow.displayName = 'ItemRow';
 
 const ItemDetailsTable = memo(({ items, onUpdateItem, onAddItem }: ItemDetailsTableProps) => {
+  console.log('🏢 ItemDetailsTable rendering with', items.length, 'items');
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
