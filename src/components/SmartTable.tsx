@@ -10,7 +10,7 @@ export interface TableColumn<T> {
   render?: (value: any, item: T) => React.ReactNode;
 }
 
-interface SmartTableProps<T> {
+interface SmartTableProps<T extends Record<string, any>> {
   data: T[];
   columns: TableColumn<T>[];
   title: string;

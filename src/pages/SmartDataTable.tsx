@@ -61,7 +61,7 @@ const SmartDataTable = () => {
   ];
 
   // Item Tax table configuration
-  const itemTaxColumns: TableColumn<ItemTax & { itemName?: string; taxName?: string }>[] = [
+  const itemTaxColumns: TableColumn<ItemTax>[] = [
     {
       key: 'itemId',
       header: 'Item',
@@ -117,21 +117,27 @@ const SmartDataTable = () => {
       if (itemTax.id === id) {
         const updatedItemTax = { ...itemTax, ...updates };
         
-        // Recalculate total if itemId or taxId changed
-        if ('itemId' in updates || 'taxId' in updates) {
-          const item = items.find(i => i.id === updatedItemTax.itemId);
-          const tax = taxes.find(t => t.id === updatedItemTax.taxId);
-          
-          if (item && tax) {
-            let total = 0;
-            if (tax.type === 'Percentage') {
-              total = (item.amount * tax.charge) / 100;
-            } else {
-              total = tax.charge;
-            }
-            updatedItemTax.total = parseFloat(total.toFixed(2));
-            console.log(`🧮 Total recalculated for itemTax ${id}: ${updatedItemTax.total}`);
+        // Convert string values to numbers for itemId and taxId
+        if ('itemId' in updates) {
+          updatedItemTax.itemId = typeof updates.itemId === 'string' ? parseInt(updates.itemId) : updates.itemId!;
+        }
+        if ('taxId' in updates) {
+          updatedItemTax.taxId = typeof updates.taxId === 'string' ? parseInt(updates.taxId) : updates.taxId!;
+        }
+        
+        // Recalculate total when itemId or taxId changes
+        const item = items.find(i => i.id === updatedItemTax.itemId);
+        const tax = taxes.find(t => t.id === updatedItemTax.taxId);
+        
+        if (item && tax) {
+          let total = 0;
+          if (tax.type === 'Percentage') {
+            total = (item.amount * tax.charge) / 100;
+          } else {
+            total = tax.charge;
           }
+          updatedItemTax.total = parseFloat(total.toFixed(2));
+          console.log(`🧮 Total recalculated for itemTax ${id}: ${updatedItemTax.total}`);
         }
         
         return updatedItemTax;
@@ -166,12 +172,29 @@ const SmartDataTable = () => {
 
   const addItemTax = useCallback(() => {
     const newId = Math.max(...itemTaxes.map(it => it.id), 0) + 1;
+    const defaultItemId = items[0]?.id || 1;
+    const defaultTaxId = taxes[0]?.id || 1;
+    
     console.log(`➕ Adding new item tax with ID: ${newId}`);
+    
+    // Calculate initial total
+    const item = items.find(i => i.id === defaultItemId);
+    const tax = taxes.find(t => t.id === defaultTaxId);
+    let initialTotal = 0;
+    
+    if (item && tax) {
+      if (tax.type === 'Percentage') {
+        initialTotal = (item.amount * tax.charge) / 100;
+      } else {
+        initialTotal = tax.charge;
+      }
+    }
+    
     setItemTaxes(prev => [...prev, { 
       id: newId, 
-      itemId: items[0]?.id || 1, 
-      taxId: taxes[0]?.id || 1, 
-      total: 0 
+      itemId: defaultItemId, 
+      taxId: defaultTaxId, 
+      total: parseFloat(initialTotal.toFixed(2))
     }]);
   }, [itemTaxes, items, taxes]);
 
