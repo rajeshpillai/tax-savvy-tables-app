@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import TableDemo from "./pages/TableDemo";
 import SmartDataTable from "./pages/SmartDataTable";
+import SmartDataTableReducer from "./pages/SmartDataTableReducer";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<LandingPage />} />
           <Route path="/table-demo" element={<TableDemo />} />
           <Route path="/smart-data-table" element={<SmartDataTable />} />
+          <Route path="/smart-datatable-reducer" element={<SmartDataTableReducer />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

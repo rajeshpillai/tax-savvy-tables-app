@@ -81,14 +81,14 @@ const SmartTableRow = memo(<T extends Record<string, any>>({
 
 SmartTableRow.displayName = 'SmartTableRow';
 
-const SmartTable = memo(<T extends Record<string, any>>({
+function SmartTable<T extends Record<string, any>>({
   data,
   columns,
   title,
   onUpdate,
   onAdd,
   idKey
-}: SmartTableProps<T>) => {
+}: SmartTableProps<T>) {
   console.log(`🏢 SmartTable "${title}" rendering with ${data.length} items`);
 
   return (
@@ -133,8 +133,6 @@ const SmartTable = memo(<T extends Record<string, any>>({
       </div>
     </div>
   );
-});
-
-SmartTable.displayName = 'SmartTable';
+}
 
 export default SmartTable;
