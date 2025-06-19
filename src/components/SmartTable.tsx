@@ -2,7 +2,7 @@
 import React, { memo, useCallback } from 'react';
 import { Plus } from 'lucide-react';
 
-export interface TableColumn<T> {
+export interface TableColumn<T extends Record<string, any>> {
   key: keyof T;
   header: string;
   type: 'text' | 'number' | 'select' | 'readonly';
