@@ -34,7 +34,7 @@ const SmartTableRow = memo(<T extends Record<string, any>>({
 
   const handleInputChange = useCallback((columnKey: keyof T, value: any) => {
     console.log(`📝 ${String(columnKey)} change for item ${item[idKey]}: ${value}`);
-    onUpdate(item[idKey], { [columnKey]: value } as Partial<T>);
+    onUpdate(item[idKey] as number, { [columnKey]: value } as Partial<T>);
   }, [item, onUpdate, idKey]);
 
   return (
@@ -120,8 +120,8 @@ function SmartTable<T extends Record<string, any>>({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {data.map((item) => (
-              <SmartTableRow
-                key={item[idKey]}
+              <SmartTableRow<T>
+                key={item[idKey] as React.Key}
                 item={item}
                 columns={columns}
                 onUpdate={onUpdate}
