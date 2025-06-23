@@ -109,7 +109,7 @@ const SmartTableRow = memo(<T extends Record<string, any>>({
   }
   
   return true; // Don't re-render if nothing changed
-});
+}) as <T extends Record<string, any>>(props: SmartTableRowProps<T>) => JSX.Element;
 
 SmartTableRow.displayName = 'SmartTableRow';
 
@@ -152,8 +152,8 @@ function SmartTable<T extends Record<string, any>>({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {data.map((item) => (
-              <SmartTableRow
-                key={item[idKey] as React.Key}
+              <SmartTableRow<T>
+                key={String(item[idKey])}
                 item={item}
                 columns={columns}
                 onUpdate={onUpdate}
