@@ -2,41 +2,17 @@
 import React, { memo, useCallback } from 'react';
 import { Plus } from 'lucide-react';
 
-export interface TableColumn<T extends Record<string, any>> {
-  key: keyof T;
-  header: string;
-  type: 'text' | 'number' | 'select' | 'readonly';
-  options?: { value: any; label: string }[];
-  render?: (value: any, item: T) => React.ReactNode;
-}
-
-interface SmartTableProps<T extends Record<string, any>> {
-  data: T[];
-  columns: TableColumn<T>[];
-  title: string;
-  onUpdate: (id: number, updates: Partial<T>) => void;
-  onAdd: () => void;
-  idKey: keyof T;
-}
-
-interface SmartTableRowProps<T extends Record<string, any>> {
-  item: T;
-  columns: TableColumn<T>[];
-  onUpdate: (id: number, updates: Partial<T>) => void;
-  idKey: keyof T;
-}
-
-const SmartTableRowComponent = <T extends Record<string, any>>({
+const SmartTableRowComponent = ({
   item,
   columns,
   onUpdate,
   idKey
-}: SmartTableRowProps<T>) => {
+}) => {
   console.log(`🔄 SmartTableRow ${item[idKey]} rendering`);
 
-  const handleInputChange = useCallback((columnKey: keyof T, value: any) => {
+  const handleInputChange = useCallback((columnKey, value) => {
     console.log(`📝 ${String(columnKey)} change for item ${item[idKey]}: ${value}`);
-    onUpdate(item[idKey] as number, { [columnKey]: value } as Partial<T>);
+    onUpdate(item[idKey], { [columnKey]: value });
   }, [item, onUpdate, idKey]);
 
   return (
@@ -81,11 +57,8 @@ const SmartTableRowComponent = <T extends Record<string, any>>({
   );
 };
 
-// Type the memo function to preserve generics
-const SmartTableRow = memo(SmartTableRowComponent, <T extends Record<string, any>>(
-  prevProps: SmartTableRowProps<T>, 
-  nextProps: SmartTableRowProps<T>
-) => {
+// Memo with custom comparison function
+const SmartTableRow = memo(SmartTableRowComponent, (prevProps, nextProps) => {
   // Custom comparison function for better memoization
   const prevItem = prevProps.item;
   const nextItem = nextProps.item;
@@ -115,19 +88,18 @@ const SmartTableRow = memo(SmartTableRowComponent, <T extends Record<string, any
   }
   
   return true; // Don't re-render if nothing changed
-}) as <T extends Record<string, any>>(props: SmartTableRowProps<T>) => React.ReactElement;
+});
 
-// Fix displayName assignment
-(SmartTableRow as any).displayName = 'SmartTableRow';
+SmartTableRow.displayName = 'SmartTableRow';
 
-function SmartTable<T extends Record<string, any>>({
+function SmartTable({
   data,
   columns,
   title,
   onUpdate,
   onAdd,
   idKey
-}: SmartTableProps<T>) {
+}) {
   console.log(`🏢 SmartTable "${title}" rendering with ${data.length} items`);
 
   return (
@@ -159,7 +131,7 @@ function SmartTable<T extends Record<string, any>>({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {data.map((item) => (
-              <SmartTableRow<T>
+              <SmartTableRow
                 key={String(item[idKey])}
                 item={item}
                 columns={columns}
