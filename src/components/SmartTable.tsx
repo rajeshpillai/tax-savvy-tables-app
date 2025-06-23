@@ -26,7 +26,7 @@ interface SmartTableRowProps<T extends Record<string, any>> {
   idKey: keyof T;
 }
 
-const SmartTableRow = memo(<T extends Record<string, any>>({
+const SmartTableRowComponent = <T extends Record<string, any>>({
   item,
   columns,
   onUpdate,
@@ -79,7 +79,9 @@ const SmartTableRow = memo(<T extends Record<string, any>>({
       ))}
     </tr>
   );
-}, (prevProps, nextProps) => {
+};
+
+const SmartTableRow = memo(SmartTableRowComponent, (prevProps, nextProps) => {
   // Custom comparison function for better memoization
   const prevItem = prevProps.item;
   const nextItem = nextProps.item;
@@ -109,7 +111,7 @@ const SmartTableRow = memo(<T extends Record<string, any>>({
   }
   
   return true; // Don't re-render if nothing changed
-}) as <T extends Record<string, any>>(props: SmartTableRowProps<T>) => JSX.Element;
+});
 
 SmartTableRow.displayName = 'SmartTableRow';
 
@@ -152,7 +154,7 @@ function SmartTable<T extends Record<string, any>>({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {data.map((item) => (
-              <SmartTableRow<T>
+              <SmartTableRow
                 key={String(item[idKey])}
                 item={item}
                 columns={columns}
