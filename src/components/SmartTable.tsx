@@ -117,7 +117,8 @@ const SmartTableRow = memo(SmartTableRowComponent, <T extends Record<string, any
   return true; // Don't re-render if nothing changed
 }) as <T extends Record<string, any>>(props: SmartTableRowProps<T>) => React.ReactElement;
 
-SmartTableRow.displayName = 'SmartTableRow';
+// Fix displayName assignment
+(SmartTableRow as any).displayName = 'SmartTableRow';
 
 function SmartTable<T extends Record<string, any>>({
   data,
