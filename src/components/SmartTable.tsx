@@ -19,17 +19,19 @@ interface SmartTableProps<T extends Record<string, any>> {
   idKey: keyof T;
 }
 
+interface SmartTableRowProps<T extends Record<string, any>> {
+  item: T;
+  columns: TableColumn<T>[];
+  onUpdate: (id: number, updates: Partial<T>) => void;
+  idKey: keyof T;
+}
+
 const SmartTableRow = memo(<T extends Record<string, any>>({
   item,
   columns,
   onUpdate,
   idKey
-}: {
-  item: T;
-  columns: TableColumn<T>[];
-  onUpdate: (id: number, updates: Partial<T>) => void;
-  idKey: keyof T;
-}) => {
+}: SmartTableRowProps<T>) => {
   console.log(`🔄 SmartTableRow ${item[idKey]} rendering`);
 
   const handleInputChange = useCallback((columnKey: keyof T, value: any) => {
@@ -77,6 +79,36 @@ const SmartTableRow = memo(<T extends Record<string, any>>({
       ))}
     </tr>
   );
+}, (prevProps, nextProps) => {
+  // Custom comparison function for better memoization
+  const prevItem = prevProps.item;
+  const nextItem = nextProps.item;
+  
+  // Check if the item data has changed
+  for (const column of prevProps.columns) {
+    if (prevItem[column.key] !== nextItem[column.key]) {
+      return false; // Re-render if any column value changed
+    }
+  }
+  
+  // Check if columns themselves changed (important for select options)
+  if (prevProps.columns.length !== nextProps.columns.length) {
+    return false;
+  }
+  
+  // Check if column options changed (for select fields)
+  for (let i = 0; i < prevProps.columns.length; i++) {
+    const prevCol = prevProps.columns[i];
+    const nextCol = nextProps.columns[i];
+    
+    if (prevCol.key !== nextCol.key || 
+        prevCol.type !== nextCol.type ||
+        JSON.stringify(prevCol.options) !== JSON.stringify(nextCol.options)) {
+      return false;
+    }
+  }
+  
+  return true; // Don't re-render if nothing changed
 });
 
 SmartTableRow.displayName = 'SmartTableRow';
@@ -120,7 +152,7 @@ function SmartTable<T extends Record<string, any>>({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {data.map((item) => (
-              <SmartTableRow<T>
+              <SmartTableRow
                 key={item[idKey] as React.Key}
                 item={item}
                 columns={columns}
