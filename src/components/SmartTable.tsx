@@ -81,7 +81,11 @@ const SmartTableRowComponent = <T extends Record<string, any>>({
   );
 };
 
-const SmartTableRow = memo(SmartTableRowComponent, (prevProps, nextProps) => {
+// Type the memo function to preserve generics
+const SmartTableRow = memo(SmartTableRowComponent, <T extends Record<string, any>>(
+  prevProps: SmartTableRowProps<T>, 
+  nextProps: SmartTableRowProps<T>
+) => {
   // Custom comparison function for better memoization
   const prevItem = prevProps.item;
   const nextItem = nextProps.item;
@@ -111,7 +115,7 @@ const SmartTableRow = memo(SmartTableRowComponent, (prevProps, nextProps) => {
   }
   
   return true; // Don't re-render if nothing changed
-});
+}) as <T extends Record<string, any>>(props: SmartTableRowProps<T>) => React.ReactElement;
 
 SmartTableRow.displayName = 'SmartTableRow';
 
@@ -154,7 +158,7 @@ function SmartTable<T extends Record<string, any>>({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {data.map((item) => (
-              <SmartTableRow
+              <SmartTableRow<T>
                 key={String(item[idKey])}
                 item={item}
                 columns={columns}
